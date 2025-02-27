@@ -2,7 +2,7 @@
 #
 # EOF (end-of-file) token is used to indicate that
 # there is no more input left for lexical analysis
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
+INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
 
 class Token(object):
     def __init__(self, type, value):
@@ -43,11 +43,6 @@ class Interpreter(object):
 
         This method reads characters one at a time and converts them into tokens.
         """
-        text = self.text
-        if self.pos > len(text) - 1:
-            return Token(EOF, None)
-        current_char = text[self.pos]
-        
         while self.current_char is not None:
             if self.current_char.isspace():
                 self.skip_whitespace()
