@@ -84,26 +84,6 @@ class Interpreter(object):
             self.error()
             
         return Token(EOF, None)
-
-    def skip_whitespace(self):
-        while self.current_char is not None and self.current_char.isspace():
-            self.advance()
-
-    def integer(self):
-        """Return a (multidigit) integer consumed from the input."""
-        result = ''
-        while self.current_char is not None and self.current_char.isdigit():
-            result += self.current_char
-            self.advance()
-        return int(result)
-        
-    def advance(self):
-        """Advance the 'pos' pointer and set the 'current_char' variable."""
-        self.pos += 1
-        if self.pos > len(self.text) - 1:
-            self.current_char = None #Indicates end of input
-        else:
-            self.current_char = self.text[self.pos]
     
     def eat(self, token_type):
         # compare the current token type with the passed token
@@ -115,39 +95,27 @@ class Interpreter(object):
         else:
             self.error()
 
+    def term(self):
+        """Return an INTEGER token value."""
+        token = self.current_token
+        self.eat(INTEGER)
+        return token.value
+
     def expr(self):
-        """Parser / Interpreter
-        expr -> INTEGER PLUS INTEGER
-        expr -> INTEGER MINUS INTEGER
-        """
-        # set current token to the first token taken from the the input
+        """Arithmetic expression parser / interpreter."""
+        # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
 
-         # we expect the current token to be a single-digit integer
-        left = self.current_token
-        self.eat(INTEGER)
-
-        # we expect the current token to be a '+' token
-        op = self.current_token
-        if op.type == PLUS:
-            self.eat(PLUS)
-        else:
-            self.eat(MINUS)
-
-        # we expect the current token to be a single-digit integer
-        right = self.current_token
-        self.eat(INTEGER)
-
-        # after the above call the self.current_token is set to
-        # EOF token
-        # at this point INTEGER PLUS INTEGER sequence of tokens
-        # has been successfully found and the method can just
-        # return the result of adding two integers, thus
-        # effectively interpreting client input
-        if op.type == PLUS:
-            result = left.value + right.value
-        else:
-            result = left.value - right.value
+        result = self.term()
+        while self.current_token.type in (PLUS, MINUS):
+            token = self.current_token
+            if token.type == PLUS:
+                self.eat(PLUS)
+                result = result + self.term()
+            else if token.type == MINUS:
+                self.eat(MINUS)
+                result = result - self.term()
+                
         return result
 
 def main():
@@ -155,13 +123,11 @@ def main():
         try:
             # To run under Python3 replace 'raw_input' call
             # with 'input'
-            text = input('calc> ')
+            text = raw_input('calc> ')
         except EOFError:
             break
-
         if not text:
             continue
-
         interpreter = Interpreter(text)
         result = interpreter.expr()
         print(result)
