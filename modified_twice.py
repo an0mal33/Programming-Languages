@@ -112,7 +112,7 @@ class Interpreter(object):
             if token.type == PLUS:
                 self.eat(PLUS)
                 result = result + self.term()
-            else if token.type == MINUS:
+            elif token.type == MINUS:
                 self.eat(MINUS)
                 result = result - self.term()
                 
@@ -123,7 +123,7 @@ def main():
         try:
             # To run under Python3 replace 'raw_input' call
             # with 'input'
-            text = raw_input('calc> ')
+            text = input('calc> ')
         except EOFError:
             break
         if not text:
