@@ -27,7 +27,7 @@ class Token(object):
         return self.__str__()
 
 class Lexer(object):
-  def_init_(self, text):
+  def __init__(self, text):
     # client string input, e.g. "3 * 5", "12 / 3 * 4", etc
     self.text = text
     # self.pos is an index into self.text
@@ -85,7 +85,7 @@ class Lexer(object):
     return Token(EOF, None)
 
 class Interpreter(object):
-  def_init_(self, lexer):
+  def __init__(self, lexer):
     self.lexer = lexer
     # set current token to the first token taken from the input
     self.current_token = self.lexer.get_next_token()
@@ -93,7 +93,7 @@ class Interpreter(object):
   def error(self):
     raise Exception('Invalid syntax')
 
-  def eat(self, token type):
+  def eat(self, token_type):
     # compare the current type with the passed token
     # type and if they match then "eat" the current token
     # and assign the next token to the self.current_token,
@@ -131,20 +131,20 @@ class Interpreter(object):
 
     return result
 
-  def main():
+def main():
     while True:
-      try:
-        # To run under Pyhton3 replace 'raw_input' call
-        # with 'input'
-        text = input('calc>')
-      except EOFError:
-        break
-      if not text:
-        continue
-      lexer = Lexer(text)
-      interpreter = Interpreter(lexer)
-      result = interpreter.expr()
-      print(result)
+        try:
+            # To run under Pyhton3 replace 'raw_input' call
+            # with 'input'
+            text = input('calc>')
+        except EOFError:
+            break
+        if not text:
+            continue
+        lexer = Lexer(text)
+        interpreter = Interpreter(lexer)
+        result = interpreter.expr()
+        print(result)
 
 if __name__ == '__main__':
     main()
