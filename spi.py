@@ -102,7 +102,7 @@ class Lexer(object):
 class AST(object):
     pass
 
-class Bin0p(AST):
+class BinOp(AST):
     def __init__(self, left, op, right):
         self.left = left
         self.token = self.op = op
@@ -123,7 +123,7 @@ class Parser(object):
         raise Exception('Invalid syntax')
             
     def eat(self, token_type):
-        # compate the current token type with the passed token
+        # compare the current token type with the passed token
         # type and if they match then "eat" the current token
         # and assign the next token to the self.current_token,
         # otherwise raise an exception.
@@ -146,7 +146,7 @@ class Parser(object):
                 
     def term(self):
         """term : factor ((MUL | DIV) factor)*"""
-        result = self.factor()
+        node = self.factor()
             
         while self.current_token.type in (MUL, DIV):
             token = self.current_token
@@ -155,7 +155,7 @@ class Parser(object):
             elif token.type == DIV:
                 self.eat(DIV)
                 
-            node = Bin0p(left=node, op=token, right=self.factor())
+            node = BinOp(left=node, op=token, right=self.factor())
             
         return node
             
@@ -174,11 +174,11 @@ class Parser(object):
             elif token.type == MINUS:
                 self.eat(MINUS)
             
-            node = Bin0p(left=node, op=token, right=self.term())
+            node = BinOp(left=node, op=token, right=self.term())
                     
         return node
         
-    def parser(self):
+    def parse(self):
         return self.expr()
 
 class NodeVisitor(object):
@@ -188,13 +188,13 @@ class NodeVisitor(object):
         return visitor(node)
         
     def generic_visit(self, node):
-        raise Exeception('No visit_{} method'.format(type(node).__name__))
+        raise Exception('No visit_{} method'.format(type(node).__name__))
         
 class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
         
-    def visit_Bin0p(self, node):
+    def visit_BinOp(self, node):
         if node.op.type == PLUS:
             return self.visit(node.left) + self.visit(node.right)
         elif node.op.type == MINUS:
@@ -204,10 +204,10 @@ class Interpreter(NodeVisitor):
         elif node.op.type == DIV:
             return self.visit(node.left) / self.visit(node.right)
     
-    def vist_Num(self, node):
+    def visit_Num(self, node):
         return node.value
         
-    def interpreter(self):
+    def interpret(self):
         tree = self.parser.parse()
         return self.visit(tree)
         
