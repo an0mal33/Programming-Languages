@@ -119,10 +119,10 @@ class Compound(AST):
     self.children = []
 
 class Assign(AST):
-  def __init__(self, left, op, right)
-  self.left = left
-  self.token = self.op = op
-  self.right = right
+  def __init__(self, left, op, right):
+    self.left = left
+    self.token = self.op = op
+    self.right = right
 
 class Var(AST):
   """The Var node is constructed out of ID token."""
@@ -158,7 +158,7 @@ class Parser(object):
       self.eat(DOT)
       return node
 
-    def compound_statement(self)
+    def compound_statement(self):
       """compound_statement: BEGIN statement_list END
       """
       self.eat(BEGIN)
@@ -235,7 +235,7 @@ class Parser(object):
         if token.type == PLUS:
           self.eat(PLUS)
           node = UnaryOp(token, self.factor())
-            return node
+          return node
           ...
         else:
           node = self.variable()
@@ -277,10 +277,10 @@ class Parser(object):
         
     def parse(self):
         node = self.program()
-      if self.current_token.type != EOF:
-        self.error
+        if self.current_token.type != EOF:
+            self.error()
 
-      return node
+        return node
 
 class NodeVisitor(object):
     def visit(self, node):
