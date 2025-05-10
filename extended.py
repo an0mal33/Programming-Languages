@@ -55,7 +55,29 @@ class Lexer(object):
             result += self.current_char
             self.advance()
         return int(result)
-        
+
+    def peek(self):
+        peek_pos = self.pos + 1
+        if peek_pos > len(self.text) - 1:
+            return None
+        else:
+            return self.text[peek_pos]
+
+    RESERVED_KEYWORDS = {
+        'BEGIN': Token('BEGIN', 'BEGIN'),
+        'END': Token('END', 'END'),
+    }
+
+    def _id(self):
+        """Handle identifiers and reserved keywords"""
+        result = ''
+        while self.current_char is not None and self.current_char.isalnum():
+            result += self.current_char
+            self.advance()
+
+        token = RESERVED_KEYWORDS.get(result, Token(ID, result))
+        return token
+    
     def get_next_token(self):
         """Lexical analyzer (also known as scanner or tokenizer)
         
@@ -63,6 +85,19 @@ class Lexer(object):
         apart into tokens. One token at a time.
         """
         while self.current_char is not None:
+            ...
+            if self.current_char.isalpha():
+                return self._id()
+
+            if self.current_char == ':' and self.peek() == '=':
+                self.advance()
+                self.advance()
+                return Token(ASSIGN, ':=')
+
+            if self.current_char == ';':
+                self.advance()
+                return Token(DOT, '.')
+            ...
             
             if self.current_char.isspace():
                 self.skip_whitespace()
