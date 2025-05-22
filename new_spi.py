@@ -517,22 +517,16 @@ class Interpreter(NodeVisitor):
             return -self.visit(node.expr)
         
 def main():
-    while True:
-        try:
-            try:
-                text = raw_input('spi> ')
-            except NameError: # Python3
-                text = input('spi> ')
-        except EOFError:
-            break
-        if not text:
-            continue
+    import sys
+    text = open(sys.arvg[1], 'r').read()
         
         lexer = Lexer(text)
         parser = Parser(lexer)
         interpreter = Interpreter(parser)
         result = interpreter.interpret()
-        print(result)
+
+        for k, v in sorted(interpreter.GLOBAL_SCOPE.items()):
+            print('{} = {}'.format(k, v))
                 
 if __name__ == '__main__':
     main()
